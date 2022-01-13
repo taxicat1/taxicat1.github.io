@@ -350,7 +350,7 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
     key *= 14933078535860113000U; // Inverse of 21 modulo 2^64
     
     /* Invert: key ^= key >> 31 */
-    key ^= key >> 31; // Starting at 32 and doubling
+    key ^= key >> 31; // Starting at 31 and doubling
     key ^= key >> 62;
     
     /* Invert: key = (~key) + (key << 18) */
@@ -514,7 +514,7 @@ k = ~k - (k << 9); // Same as k = (k * -1 * ((1<<9) + 1)) - 1
 
 /* Backwards */
 k++;
-k *= -4161011201; // Inverse of -(2^9 + 1) modulo 2^32
+k *= 133956095; // Inverse of -(2^9 + 1) modulo 2^32
 
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}

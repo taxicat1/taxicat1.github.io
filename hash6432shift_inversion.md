@@ -90,7 +90,7 @@ Therefore, those upper 22 bits can be xor-ed against bits 22-44 to obtain anothe
 ```
 
 
-This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on, where we use $\oplus$ to denote exclusive-or, a.k.a. `^` in C:
+This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on, using $\oplus$ to denote xor:
 
 $$
 k_2 = k_1 \oplus (k_1 \gg a)
@@ -489,7 +489,7 @@ $$
 \overline{x} = -x - 1
 $$
 
-This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. $-1$ here means $2^N - 1$ for bit width N.
+Where here $\overline{x}$ denotes C `~x` and $-1$ means $2^N - 1$ for bit width N. This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. 
 
 Substituted into the full line:
 

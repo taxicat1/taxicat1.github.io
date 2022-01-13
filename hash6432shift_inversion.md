@@ -485,9 +485,9 @@ deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
 
 Despite how interesting this solution is, like before with multiplicative inverses, it's simpler to just solve this mathematically. Note that:
 
-{% highlight c %}
-~x = (-1 * x) - 1
-{% endhighlight %}
+$$
+\overline{x} = -x - 1
+$$
 
 This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. $-1$ here means $2^N - 1$ for bit width N.
 
@@ -496,7 +496,7 @@ Substituted into the full line:
 $$
 \begin{align*}
 key &= \overline{key} + (key \ll 18)\\
-    &= -1 * key - 1 + key * 2^{18}\\
+    &= -key - 1 + (key * 2^{18})\\
     &= key * \left(2^{18} - 1\right) - 1
 \end{align*}
 $$

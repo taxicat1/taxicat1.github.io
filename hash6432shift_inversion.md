@@ -26,6 +26,8 @@ figure { margin: 0; }
 
 
 # Reversing an integer hash function
+{:toc}
+
 This is an integer hash function [written by Thomas Wang](https://gist.github.com/badboy/6267743):
 
 {% highlight c %}
@@ -158,8 +160,8 @@ This makes sense, because in this context a right shift is equivalent to taking 
 
 $$
 \begin{align*}
-\left\lfloor \frac{3}{4} \right\rfloor + \left\lfloor \frac{2}{4} \right\rfloor &= 0 + 0 = 0\\
-\left\lfloor \frac{3 + 2}{4} \right\rfloor = \left\lfloor \frac{5}{4} \right\rfloor &= 1
+\left\lfloor \frac{3}{4} \right\rfloor + \left\lfloor \frac{2}{4} \right\rfloor &= 0 + 0 &= 0\\
+\left\lfloor \frac{3 + 2}{4} \right\rfloor &= \left\lfloor \frac{5}{4} \right\rfloor &= 1
 \end{align*}
 $$
 
@@ -512,7 +514,7 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
 }
 {% endhighlight %}
 
-This code can churn through every single possible preimage for a given hash in about ~19 minutes. If you want to play with the C code, [here is a download to the file](inv_hash6432_shift.c).
+This code can churn through every single possible preimage for a given hash in about ~19 minutes. If you want to play with the C code, [here is a download to the file](inv_hash6432shift.c).
 
 ## Improvements to the function
 The original hash function could be improved drastically by applying the $C(i) + i$ structure mentioned at the start, like so:

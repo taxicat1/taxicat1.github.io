@@ -196,7 +196,7 @@ We now get two different answers. Which is the correct one? When you compute `k 
 
 They're both correct. This is not always the case, but this function is no longer one-to-one and so this operation is not (or at least shouldn't be) commonly included in algorithms as it will pigeonhole the value passing through it. In this specific operation, 15 outputs can be produced by two different inputs, and correspondingly 15 other outputs cannot be produced no matter what the input.
 
-However, *left* shifts do distribute, being equivalent to multiplication of $2^a$ for shift amount a, modulo $2^N$. As seen in this next line from the initial hashing function:
+However, *left* shifts do distribute, being equivalent to multiplication of $2^a$ for shift amount $a$, modulo $2^N$. As seen in this next line from the initial hashing function:
 
 {% highlight c %}
 key += key << 6;
@@ -304,7 +304,7 @@ printf("%08x\n", k); // deadbeef !
 
 At this point I have to say thanks to [this extended Euclidean algorithm calculator](https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
 
-Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with $2^N$— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of $2^a$. Multiplying by an even number would be written as such with shifts:
+Note that to have a multiplicative inverse modulo $2^N$, the multiplier number must be coprime with $2^N$— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of $2^a$. Multiplying by an even number would be written as such with shifts:
 
 {% highlight c %}
 /* REPLACING k here, not adding to it */

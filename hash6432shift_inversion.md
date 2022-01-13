@@ -18,9 +18,21 @@ MathJax.Hub.Config({
 
 <style>
 /* Stupid band-aids for everything that's broken */
-figure { margin: 0; }
-.highlight .c1 { white-space: normal; }
-.sp-gr { color: #0a0; }
+figure {
+	margin: 0;
+}
+
+.highlight .c1 {
+	white-space: normal;
+}
+
+.sp-gr {
+	color: #0a0;
+}
+
+.container-lg {
+	max-width: 730px;
+}
 </style>
 
 

@@ -194,7 +194,7 @@ If we try to do the same trick of extracting the upper 4 bits, assuming they hav
 
 ```
    00001110        00001110
- -     1111    -    0000
+ -     1111       -    0000
    --------        --------
    11111111        00001110
 ```

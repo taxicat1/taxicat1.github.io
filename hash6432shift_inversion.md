@@ -43,7 +43,7 @@ It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic stat
 However in this case it is possible to work each step backwards, starting with taking a wild guess at which the 32 truncated bits may be at the end.The remaining steps, which add or xor a shift of the original data, are fully invertible. Therefore, every possible guess at the truncated bits can be traced back to a valid preimage.
 
 ## Inverting xor-s of shifts
-So let’s look at next line before the truncation:
+So let’s look at the next line before the truncation:
 
 ```C
 key ^= key >> 22;

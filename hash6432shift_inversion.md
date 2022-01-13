@@ -16,7 +16,9 @@
 </script>
 
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML' async></script>
-
+<style>
+figure { margin: 0; }
+</style>
 
 
 
@@ -91,13 +93,13 @@ Or visually with some 8-bit strings:
 
 ```
  - Add then shift    - Shift then add
-   10011010             100110(10)
- ^ 01111001          ^  011110(01)
-   --------             ------
-   11100011             111000
-       >> 2
-   --------
-     111000(11)
+    10011010            100110(10)
+  ^ 01111001          ^ 011110(01)
+    --------            ------
+    11100011            111000
+        >> 2
+    --------
+      111000(11)
 ```
 
 Now we have xor-ed another copy of `k_1 >> a` against the xor-sum. This can be seen by substituting k_2 for its value as defined in terms of k_1:

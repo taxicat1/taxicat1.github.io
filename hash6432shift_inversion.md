@@ -26,7 +26,7 @@
 This is an integer hash function written by Thomas Wang
 (https://gist.github.com/badboy/6267743):
 
-```C
+{% highlight c %}
 uint32_t hash6432shift(uint64_t key) {
     key = (~key) + (key << 18);
     key ^= key >> 31;
@@ -36,7 +36,7 @@ uint32_t hash6432shift(uint64_t key) {
     key ^= key >> 22;
     return 0xFFFFFFFF & key;
 }
-```
+{% endhighlight %}
 
 It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function `C` along with input data or state `i` and compute `C(i) + i`. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed input— contradictions like this are the essence of fan-out.
 
@@ -45,9 +45,9 @@ However in this case it is possible to work each step backwards, starting with t
 ## Inverting xor-s of shifts
 So let’s look at the next line before the truncation:
 
-```C
+{% highlight c %}
 key ^= key >> 22;
-```
+{% endhighlight %}
 
 Looking at it, we can see that the uppermost 22 bits of `key` are unaffected by the operation. Consider a visualization of a simpler example, say `x ^ (x >> 7)` for some 16-bit wide string `x`:
 
@@ -111,7 +111,7 @@ However now we have added another term to the sum, but with a doubled shift amou
 
 We can try this in code and see that it works:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -125,18 +125,17 @@ k ^= k >> 24;
 //k ^= k >> 48; // We can stop, 48 is larger than the width of 32
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 This same method can be applied to all of the lines of the function that xor shifts:
 
-```C
+{% highlight c %}
 key ^= key >> 31;
 ...
 key ^= key >> 11;
 ...
 key ^= key >> 22;
-
-```
+{% endhighlight %}
 
 Although the function only uses xor with right shifts, this same method works just the same for left shifts. Consider reversing the order of the bits of a string, then xor-ing a right shift, and then restoring the original order. Since xor has no borrow or carry out, it is agnostic to shift direction.
 
@@ -180,9 +179,9 @@ They're both correct. This is not always the case, but this function is no longe
 
 However, *left* shifts do distribute, being equivalent to multiplication of 2^a for shift amount a, modulo 2^N. As seen in this next line from the initial hashing function:
 
-```C
+{% highlight c %}
 key += key << 6;
-```
+{% endhighlight %}
 
 This can be modeled algebraically in the same way:
 
@@ -212,7 +211,7 @@ k_4 = k_3 + (k_3 << 12)
 The remaining term remains negative from here, having been propagated down from
 the initial subtraction. As earlier, we continue doing this until the magnitude of the shift exceeds the bitwidth of `k`, and thus the value being shifted becomes zero. Doing this in code:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -225,11 +224,11 @@ k += k << 12;
 k += k << 24;
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 This also works the same for subtraction of a left shift, where the subtraction itself propagates through the iterations:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -242,11 +241,11 @@ k += k << 12;
 k += k << 24;
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 However, since a left shift is multiplication modulo 2^N, we can instead invert this by multiplying by the multiplicative inverse, modulo 2^N:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -256,11 +255,11 @@ k += k << 3; // Same k += 8 * k, so same as k *= 9
 k *= 954437177; // Inverse of 9 modulo 2^32
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 And of course this also works the same for subtraction of a left shift, where `k - (k << 3)` is equal to `k * -7`:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -270,24 +269,24 @@ k -= k << 3; // Same as k *= -7 (= 2^32 - 7)
 k *= 1227133513; // Inverse of 2^32 - 7 modulo 2^32
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 At this point I have to say thanks to this extended Euclidean algorithm calculator (https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
 
 Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with 2^N— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of 2^a. Multiplying by an even number would be written as such with shifts:
 
-```C
+{% highlight c %}
 /* REPLACING k here, not adding to it */
 k = k << 2;               // k *= 4
 k = (k << 1) + (k << 3);  // k *= 10
 k = 0 - (k << 4);         // k *= -16
-```
+{% endhighlight %}
 
 This is obviously uninvertible because the shifts remove bits with no trace of the original `k` value. For instance an 8-bit `k` value of `0b10001100` when replaced with a left shift of itself deletes the high bit, and has the same result as shifting the value `0b00001100`.
 ## Code so far
 Looking back at the original hash function, it's clear how to proceed with inverting most of it:
 
-```C
+{% highlight c %}
 uint32_t hash6432shift(uint64_t key) {
     key = (~key) + (key << 18);
     key ^= key >> 31;
@@ -297,11 +296,11 @@ uint32_t hash6432shift(uint64_t key) {
     key ^= key >> 22;
     return 0xFFFFFFFF & key;
 }
-```
+{% endhighlight %}
 
 Our code so far might look like this:
 
-```C
+{% highlight c %}
 uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
     /* Invert: 0xFFFFFFFF & key */
     uint64_t key = hash | ((uint64_t)trunc << 32);
@@ -330,7 +329,7 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
     
     return key;
 }
-```
+{% endhighlight %}
 
 ## Inverting addition to complement
 The last thing to do is invert the addition of a left shift to the complement. This is a bit tricky, now we have two transformations of the data instead of one. Intuitively complementing does not  distribute with addition like it does with xor, because it changes where the carry-outs are occurring.
@@ -374,7 +373,7 @@ This must be done in pieces while slowly assembling the original input, because 
 
 The code to do this might look like this:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -389,7 +388,7 @@ ktmp = ~(k - (ktmp << 9));
 k = ktmp;
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 Printing the value of `ktmp` after each iteration shows how it is extracting bits in groups of 9:
 
@@ -438,7 +437,7 @@ key = (~key) + (key << 18)
 
 So while complementing as a black box does not distribute with addition, all that needs to be done to resolve this is to add one. Then what is necessary for the code is:
 
-```C
+{% highlight c %}
 uint32_t k = 0xdeadbeef;
 
 /* Forwards */
@@ -449,12 +448,12 @@ k++;
 k *= 4160486911; // Inverse of 2^9 - 1 modulo 2^32
 
 printf("%08x\n", k); // deadbeef !
-```
+{% endhighlight %}
 
 ## Final code
 And so the final inversion of the hash function is:
 
-```C
+{% highlight c %}
 uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
     uint64_t key = hash | ((uint64_t)trunc << 32);
     
@@ -477,12 +476,12 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
     
     return key;
 }
-```
+{% endhighlight %}
 
 ## Improvements to the function
 The original hash function could be improved drastically by applying the C(i) + i structure mentioned at the start, like so:
 
-```C
+{% highlight c %}
 uint32_t hash6432shift(uint64_t key) {
     uint64_t in = key;  // Make a copy of the input
     
@@ -498,8 +497,6 @@ uint32_t hash6432shift(uint64_t key) {
     
     return 0xFFFFFFFF & key; // Then finally truncate
 }
-```
+{% endhighlight %}
 
 Just doing this modification I can no longer see an easy way (faster than 2^32 work) to generate preimages and so this is "left as an exercise to the reader".
-
-

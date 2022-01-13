@@ -33,6 +33,10 @@ figure {
 .container-lg {
 	max-width: 777px;
 }
+
+.markdown-body code {
+	display: inline-block;
+}
 </style>
 
 

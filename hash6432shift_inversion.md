@@ -17,7 +17,9 @@
 
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML' async></script>
 <style>
+/* Stupid band-aids for everything that's broken */
 figure { margin: 0; }
+.highlight.c1 { white-space: normal; }
 </style>
 
 
@@ -120,7 +122,7 @@ uint32_t k = 0xdeadbeef;
 k ^= k >> 3;
 
 /* Backwards */
-k ^= k >> 3; // Starting at 3 and doubling each time 
+k ^= k >> 3; // Starting at 3 and doubling each time
 k ^= k >> 6;
 k ^= k >> 12;
 k ^= k >> 24;

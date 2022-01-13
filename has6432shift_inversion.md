@@ -38,12 +38,12 @@ uint32_t hash6432shift(uint64_t key) {
 }
 ```
 
-It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function `C` along with input data or state `i` and compute `C(i) + i`. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed input— contradictions like this are the essence of fan-out.
+It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function `C` along with input data or state `i` and compute `C(i) + i`. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed inputâ€” contradictions like this are the essence of fan-out.
 
 However in this case it is possible to work each step backwards, starting with taking a wild guess at which the 32 truncated bits may be at the end.The remaining steps, which add or xor a shift of the original data, are fully invertible. Therefore, every possible guess at the truncated bits can be traced back to a valid preimage.
 
 ## Inverting xor-s of shifts
-So let’s look at next line before the truncation:
+So letâ€™s look at next line before the truncation:
 
 ```C
 key ^= key >> 22;
@@ -75,7 +75,7 @@ Therefore, those upper 22 bits can be xor-ed against bits 22-44 to obtain anothe
 ```
 
 
-This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on:
+This also works when you try to analyze it algebraically. Letâ€™s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see whatâ€™s going on:
 
 k_2 = k_1 ^ (k_1 >> a)
 
@@ -274,7 +274,7 @@ printf("%08x\n", k); // deadbeef !
 
 At this point I have to say thanks to this extended Euclidean algorithm calculator (https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
 
-Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with 2^N— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of 2^a. Multiplying by an even number would be written as such with shifts:
+Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with 2^Nâ€” that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of 2^a. Multiplying by an even number would be written as such with shifts:
 
 ```C
 /* REPLACING k here, not adding to it */
@@ -401,7 +401,7 @@ e2f1beef  11100010111100011011111011101111
 deadbeef  11011110101011011011111011101111
 ```
 
-The bits higher than the ones extracted so far are essentially garbage from the previous iteration being incorrect, and can be ignored. These bits could be masked out at each iteration, but it’s equally correct to just ignore them.
+The bits higher than the ones extracted so far are essentially garbage from the previous iteration being incorrect, and can be ignored. These bits could be masked out at each iteration, but itâ€™s equally correct to just ignore them.
 
 Another interesting thing about this solution is the initialization to 0 is not necessary. What is happening here is 0 correct bits are turned into 9, which are then turned into 18, and then into 27, and finally into all 32. Because of the left shift, we know that the rightmost 9 bits are 0 and so each iteration "corrects" 9 bits of ktmp which is a "guess" as to the input. Picking any other
 value for the initialization changes only the garbage data:
@@ -428,7 +428,7 @@ Despite how interesting this solution is, like before with multiplicative invers
 
 ~x = (-1 * x) - 1
 
-This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. `-1` here means 2^N - 1 for bit width N.
+This is true for unsigned integers as well as twoâ€™s complement signed ones, where most people would be familiar with this equation. `-1` here means 2^N - 1 for bit width N.
 
 Substituted into the full line:
     

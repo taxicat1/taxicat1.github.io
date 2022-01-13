@@ -112,14 +112,12 @@ Or visually with some 8-bit strings:
 
 Now we have xor-ed another copy of `k_1 >> a` against the xor-sum. This can be seen by substituting k_2 for its value as defined in terms of k_1:
 
-$$
 \begin{align*}
 k_3 &= k_2 \oplus (k_2 \gg a)\\
     &= k_1 \oplus (k_1 \gg a) \oplus ((k_1 \oplus (k_1 \gg a)) \gg a)\\
     &= k_1 \oplus (k_1 \gg a) \oplus (k_1 \gg a) \oplus (k_1 \gg 2a)\\
     &= k_1 \oplus (k_1 \gg 2a)
 \end{align*}
-$$
 
 However now we have added another term to the sum, but with a doubled shift amount. This is good, though, as this process can be repeated until the shift amount exceeds the width of the bitstring, at which point the extra xor-ed term becomes zero. That is, for a 16-bit string, a shift of 16 or greater results in a value of zero regardless of the input.
 

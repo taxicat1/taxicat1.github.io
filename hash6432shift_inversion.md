@@ -27,8 +27,6 @@ figure { margin: 0; }
 
 
 # Reversing an integer hash function
-{:toc}
-
 This is an integer hash function [written by Thomas Wang](https://gist.github.com/badboy/6267743):
 
 {% highlight c %}

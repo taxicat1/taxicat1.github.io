@@ -31,7 +31,7 @@ figure {
 }
 
 .container-lg {
-	max-width: 730px;
+	max-width: 777px;
 }
 </style>
 

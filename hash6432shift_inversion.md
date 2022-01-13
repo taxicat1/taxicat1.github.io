@@ -19,7 +19,7 @@
 <style>
 /* Stupid band-aids for everything that's broken */
 figure { margin: 0; }
-.highlight.c1 { white-space: normal; }
+.highlight .c1 { white-space: normal; }
 </style>
 
 

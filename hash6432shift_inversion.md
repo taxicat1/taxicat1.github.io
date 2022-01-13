@@ -101,7 +101,7 @@ $$
 Or visually with some 8-bit strings:
 
 ```
- - Add then shift    - Shift then add
+ - Xor then shift    - Shift then xor
     10011010            100110(10)
   ^ 01111001          ^ 011110(01)
     --------            ------
@@ -142,7 +142,7 @@ k ^= k >> 24;
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
-This same method can be applied to all of the lines of the function that xor shifts:
+This method can be applied to all of the lines of the function that xor shifts:
 
 {% highlight c %}
 key ^= key >> 31;
@@ -304,7 +304,7 @@ printf("%08x\n", k); // deadbeef !
 
 At this point I have to say thanks to [this extended Euclidean algorithm calculator](https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
 
-Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with 2^N— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of 2^a. Multiplying by an even number would be written as such with shifts:
+Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with $2^N$— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of $2^a$. Multiplying by an even number would be written as such with shifts:
 
 {% highlight c %}
 /* REPLACING k here, not adding to it */

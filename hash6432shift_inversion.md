@@ -81,15 +81,21 @@ Therefore, those upper 22 bits can be xor-ed against bits 22-44 to obtain anothe
 
 This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on:
 
-k_2 = k_1 ^ (k_1 >> a)
+$$
+k_2 = k_1 ^ (k_1 \gg a)
+$$
 
 In order to invert this, we must remove the `k_1 >> a` term by xor-ing it again. So, since k_2 contains a k_1 term:
 
-k_3 = k_2 ^ (k_2 >> a)
+$$
+k_3 = k_2 ^ (k_2 \gg a)
+$$
 
 This works because shifts (in either direction) distribute with xor:
 
-(x ^ y) >> a = (x >> a) ^ (y >> a)
+$$
+(x ^ y) \gg a = (x \gg a) ^ (y \gg a)
+$$
 
 Or visually with some 8-bit strings:
 
@@ -106,10 +112,14 @@ Or visually with some 8-bit strings:
 
 Now we have xor-ed another copy of `k_1 >> a` against the xor-sum. This can be seen by substituting k_2 for its value as defined in terms of k_1:
 
-k_3 = k_2 ^ (k_2 >> a)
-    = k_1 ^ (k_1 >> a) ^ ((k_1 ^ (k_1 >> a)) >> a)
-    = k_1 ^ (k_1 >> a) ^ (k_1 >> a) ^ (k_1 >> 2a)
-    = k_1 ^ (k_1 >> 2a)
+$$
+\begin{align*}
+k_3 &= k_2 ^ (k_2 \gg a)\\
+    &= k_1 ^ (k_1 \gg a) ^ ((k_1 ^ (k_1 \gg a)) \gg a)\\
+    &= k_1 ^ (k_1 \gg a) ^ (k_1 \gg a) ^ (k_1 \gg 2a)\\
+    &= k_1 ^ (k_1 \gg 2a)
+\end{align*}
+$$
 
 However now we have added another term to the sum, but with a doubled shift amount. This is good, though, as this process can be repeated until the shift amount exceeds the width of the bitstring, at which point the extra xor-ed term becomes zero. That is, for a 16-bit string, a shift of 16 or greater results in a value of zero regardless of the input.
 
@@ -148,8 +158,12 @@ The xor method does not extend to addition (or subtraction) of a right shift. So
 
 This makes sense, because in this context a right shift is equivalent to taking the floor of a division by a power of 2, which of course does not distribute over addition:
 
-floor(3 / 4) + floor(2 / 4) = 0 + 0 = 0
-floor((3 + 2) / 4) = floor(5 / 4) = 1
+$$
+\begin{align*}
+\lfloor \frac{3}{4} \rfloor + \lfloor \frac{2}{4} \rfloor &= 0 + 0 = 0\\
+\lfloor \frac{3 + 2}{4} \rfloor = \lfloor \frac{5}{4} \rfloor &= 1
+\end{align*}
+$$
 
 More practically, addition can be viewed as just xor with carry out. So looking at a particular example of 8-bit `k + (k >> 4)` :
 
@@ -189,28 +203,40 @@ key += key << 6;
 
 This can be modeled algebraically in the same way:
 
-k_2 = k_1 + (k_1 << 6)
+$$
+k_2 = k_1 + (k_1 \ll 6)
+$$
 
 We now must subtract the `k_1 << 6` term to remove it from the sum, so:
 
-k_3 = k_2 - (k_2 << 6)
+$$
+k_3 = k_2 - (k_2 \ll 6)
+$$
 
 And substituting the value for k_2:
 
-k_3 = k_2 - (k_2 << 6)
-    = k_1 + (k_1 << 6) - ((k_1 + (k_1 << 6)) << 6)
-    = k_1 + (k_1 << 6) - (k_1 << 6) - (k_1 << 12)
-    = k_1 - (k_1 << 12)
+$$
+\begin{align*}
+k_3 &= k_2 - (k_2 \ll 6)\\
+    &= k_1 + (k_1 \ll 6) - ((k_1 + (k_1 \ll 6)) \ll 6)\\
+    &= k_1 + (k_1 \ll 6) - (k_1 << 6) - (k_1 \ll 12)\\
+    &= k_1 - (k_1 \ll 12)
+\end{align*}
+$$
 
 As a side effect of the subtraction, the negative distributes and we now are
 left with a subtraction of a doubled shift amount at the end.
 
 When this operation is repeated to remove it, we switch to adding again:
 
-k_4 = k_3 + (k_3 << 12)
-    = k_1 - (k_1 << 12) + ((k_1 - (k_1 << 12)) <<, 12)
-    = k_1 - (k_1 << 12) + (k_1 << 12) - (k_1 << 24)
-    = k_1 - (k_1 << 24)
+$$
+\begin{align*}
+k_4 &= k_3 + (k_3 \ll 12)\\
+    &= k_1 - (k_1 \ll 12) + ((k_1 - (k_1 \ll 12)) \ll 12)\\
+    &= k_1 - (k_1 \ll 12) + (k_1 \ll 12) - (k_1 \ll 24)\\
+    &= k_1 - (k_1 \ll 24)
+\end{align*}
+$$
 
 The remaining term remains negative from here, having been propagated down from
 the initial subtraction. As earlier, we continue doing this until the magnitude of the shift exceeds the bitwidth of `k`, and thus the value being shifted becomes zero. Doing this in code:
@@ -429,15 +455,21 @@ deadbeef  11011110101011011011111011101111
 
 Despite how interesting this solution is, like before with multiplicative inverses, it's simpler to just solve this mathematically. Note that:
 
+{% highlight c %}
 ~x = (-1 * x) - 1
+{% endhighlight %}
 
-This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. `-1` here means 2^N - 1 for bit width N.
+This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. $-1$ here means $2^N - 1$ for bit width N.
 
 Substituted into the full line:
-    
-key = (~key) + (key << 18)
-    = (-1 * key) - 1 + (key * 2^18)
-    = (key * (2^18 - 1)) - 1
+
+$$
+\begin{align*}
+key &= \overline{key} + (key \ll 18)\\
+    &= -1 * key - 1 + key * 2^{18}\right\\
+    &= key * \left(2^{18} - 1\right) - 1
+\end{align*}
+$$
 
 So while complementing as a black box does not distribute with addition, all that needs to be done to resolve this is to add one. Then what is necessary for the code is:
 

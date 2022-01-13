@@ -493,7 +493,7 @@ $$
 \overline{x} = -x - 1
 $$
 
-Where here $\overline{x}$ denotes C `~x` and for unsigned values $-x$ means multiplying $x$ by $2^N - 1$ for bit width N. This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. 
+Where here $\overline{x}$ denotes C `~x` and for unsigned values $-x$ means multiplying $x$ by $2^N - 1$ for bit width $N$. This is true for unsigned integers as well as two’s complement signed ones, where most people would be familiar with this equation. 
 
 Substituted into the full line:
 

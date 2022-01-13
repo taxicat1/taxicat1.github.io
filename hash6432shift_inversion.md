@@ -1,8 +1,8 @@
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     tex2jax: {
-      inlineMath: [ ['$$','$$'], ["\\(","\\)"] ],
-      displayMath: [ ['$$','$$'], ["\\(","\\)"] ],
+      inlineMath: [ ['$','$'] ],
+      displayMath: [ ['$$','$$'] ],
     },
     TeX: {
       Macros: {
@@ -79,22 +79,22 @@ Therefore, those upper 22 bits can be xor-ed against bits 22-44 to obtain anothe
 ```
 
 
-This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on:
+This also works when you try to analyze it algebraically. Let’s say instead of `key = key ^ (key >> a)`, we create a new variable key2 and `key2 = key ^ (key >> a)`, to make it easier to see what’s going on, where we use $\oplus$ to denote exclusive-or, a.k.a. `^` in C:
 
 $$
-k_2 = k_1 ^ (k_1 \gg a)
+k_2 = k_1 \oplus (k_1 \gg a)
 $$
 
 In order to invert this, we must remove the `k_1 >> a` term by xor-ing it again. So, since k_2 contains a k_1 term:
 
 $$
-k_3 = k_2 ^ (k_2 \gg a)
+k_3 = k_2 \oplus (k_2 \gg a)
 $$
 
 This works because shifts (in either direction) distribute with xor:
 
 $$
-(x ^ y) \gg a = (x \gg a) ^ (y \gg a)
+(x \oplus y) \gg a = (x \gg a) \oplus (y \gg a)
 $$
 
 Or visually with some 8-bit strings:
@@ -114,10 +114,10 @@ Now we have xor-ed another copy of `k_1 >> a` against the xor-sum. This can be s
 
 $$
 \begin{align*}
-k_3 &= k_2 ^ (k_2 \gg a)\\
-    &= k_1 ^ (k_1 \gg a) ^ ((k_1 ^ (k_1 \gg a)) \gg a)\\
-    &= k_1 ^ (k_1 \gg a) ^ (k_1 \gg a) ^ (k_1 \gg 2a)\\
-    &= k_1 ^ (k_1 \gg 2a)
+k_3 &= k_2 \oplus (k_2 \gg a)\\
+    &= k_1 \oplus (k_1 \gg a) \oplus ((k_1 \oplus (k_1 \gg a)) \gg a)\\
+    &= k_1 \oplus (k_1 \gg a) \oplus (k_1 \gg a) \oplus (k_1 \gg 2a)\\
+    &= k_1 \oplus (k_1 \gg 2a)
 \end{align*}
 $$
 
@@ -160,8 +160,8 @@ This makes sense, because in this context a right shift is equivalent to taking 
 
 $$
 \begin{align*}
-\lfloor \frac{3}{4} \rfloor + \lfloor \frac{2}{4} \rfloor &= 0 + 0 = 0\\
-\lfloor \frac{3 + 2}{4} \rfloor = \lfloor \frac{5}{4} \rfloor &= 1
+\left\lfloor \frac{3}{4} \right\rfloor + \left\lfloor \frac{2}{4} \right\rfloor &= 0 + 0 = 0\\
+\left\lfloor \frac{3 + 2}{4} \right\rfloor = \left\lfloor \frac{5}{4} \right\rfloor &= 1
 \end{align*}
 $$
 
@@ -466,7 +466,7 @@ Substituted into the full line:
 $$
 \begin{align*}
 key &= \overline{key} + (key \ll 18)\\
-    &= -1 * key - 1 + key * 2^{18}\right\\
+    &= -1 * key - 1 + key * 2^{18}\\
     &= key * \left(2^{18} - 1\right) - 1
 \end{align*}
 $$

@@ -327,7 +327,7 @@ k = (k << 1) + (k << 3);  // k *= 10
 k = 0 - (k << 4);         // k *= -16
 {% endhighlight %}
 
-This is obviously uninvertible because the shifts remove bits with no trace of the original `k` value. For instance an 8-bit `k` value of `0b10001100` when replaced with a left shift of itself deletes the high bit, and has the same result as shifting the value `0b00001100`.
+This is obviously uninvertible because the shifts remove bits with no trace of the original `k` value. For instance an 8-bit `k` value of `10001100` when replaced with a left shift of itself deletes the high bit, and has the same result as shifting the value `00001100`.
 ## Code so far
 Looking back at the original hash function, it's clear how to proceed with inverting most of it:
 

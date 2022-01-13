@@ -540,6 +540,6 @@ uint32_t hash6432shift(uint64_t key) {
 Just doing this modification I can no longer see an easy way (faster than $2^32$ work) to generate preimages and so this is "left as an exercise to the reader".
 
 ## Good Wikipedia further reading
-[Hash functions](https://en.wikipedia.org/wiki/Hash_function)
-[Avalanche effect and bit independence](https://en.wikipedia.org/wiki/Avalanche_effect)
-[Fan-out](https://en.wikipedia.org/wiki/Fan-out)
+- [Hash functions](https://en.wikipedia.org/wiki/Hash_function)
+- [Avalanche effect and bit independence](https://en.wikipedia.org/wiki/Avalanche_effect)
+- [Fan-out](https://en.wikipedia.org/wiki/Fan-out)

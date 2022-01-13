@@ -203,7 +203,7 @@ We now get two different answers. Which is the correct one? When you compute `k 
 
 ```
    11111111        00001110
-+      1111   +     0000
++      1111      +     0000
    --------        --------
    00001110        00001110
 ```

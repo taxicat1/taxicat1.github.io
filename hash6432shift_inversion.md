@@ -495,7 +495,7 @@ k = ~k ^ (k << 9);
 
 /* Reverse */
 k ^= 0xfffffe00; // All bits except lowest 9
-k ^= k << 9;     // Starting with 9 and doubling
+k ^= k << 9;     // Starting at 9 and doubling
 k ^= k << 18;
 k = ~k;          // Recomplement to get original k
 

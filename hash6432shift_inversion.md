@@ -205,7 +205,7 @@ $$
 k_2 = k_1 + (k_1 \ll 6)
 $$
 
-We now must subtract the $k_1 &ll 6$ term to remove it from the sum, so:
+We now must subtract the $k_1 \ll 6$ term to remove it from the sum, so:
 
 $$
 k_3 = k_2 - (k_2 \ll 6)

@@ -419,6 +419,25 @@ k = ktmp;
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
+This also works just the same for subtraction by changing to adding in the iterations:
+
+{% highlight c %}
+uint32_t k = 0xdeadbeef;
+
+/* Forwards */
+k = ~k - (k << 9);
+
+/* Backwards */
+uint32_t ktmp = 0; // Temp variable to hold build-up of bits
+ktmp = ~(k + (ktmp << 9)); // Must run ceil(32/9) = 4 iterations
+ktmp = ~(k + (ktmp << 9));
+ktmp = ~(k + (ktmp << 9));
+ktmp = ~(k + (ktmp << 9));
+k = ktmp;
+
+printf("%08x\n", k); // deadbeef !
+{% endhighlight %}
+
 Printing the value of `ktmp` after each iteration shows how it is extracting bits in groups of 9:
 
 <pre class="highlight">
@@ -485,6 +504,21 @@ k *= 4160486911; // Inverse of 2^9 - 1 modulo 2^32
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
+Likewise with subtraction, where the multiplier becomes $-(2^a + 1)$:
+
+{% highlight c %}
+uint32_t k = 0xdeadbeef;
+
+/* Forwards */
+k = ~k - (k << 9); // Same as k = (k * -1 * ((1<<9) + 1)) - 1
+
+/* Backwards */
+k++;
+k *= -4161011201; // Inverse of -(2^9 + 1) modulo 2^32
+
+printf("%08x\n", k); // deadbeef !
+{% endhighlight %}
+
 The clever bit-extracting solution is not necessary for xor-ing shifts against the complement, either. Complements do distribute with xor, so all that is needed is to re-flip the complemented bits, and then proceed as normal with shift inversion, like so:
 
 {% highlight c %}
@@ -494,7 +528,7 @@ uint32_t k = 0xdeadbeef;
 k = ~k ^ (k << 9);
 
 /* Reverse */
-k ^= 0xfffffe00; // All bits except lowest 9
+k ^= 0xfffffe00; // All bits high except lowest 9
 k ^= k << 9;     // Starting at 9 and doubling
 k ^= k << 18;
 k = ~k;          // Recomplement to get original k

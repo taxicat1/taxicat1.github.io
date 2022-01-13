@@ -487,6 +487,23 @@ k *= 4160486911; // Inverse of 2^9 - 1 modulo 2^32
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
+The clever bit-extracting solution is not necessary for xor-ing shifts against the complement, either. Complements do distribute with xor, so all that is needed is to re-flip the complemented bits, and then proceed as normal with shift inversion, like so:
+
+{% highlight c %}
+uint32_t k = 0xdeadbeef;
+    
+/* Forward */
+k = ~k ^ (k << 9);
+
+/* Reverse */
+k ^= 0xfffffe00; // All bits except lowest 9
+k ^= k << 9;     // Starting with 9 and doubling
+k ^= k << 18;
+k = ~k;          // Recomplement to get original k
+
+printf("%08x\n", k); // deadbeef !
+{% endhighlight %}
+
 ## Final code
 And so the final inversion of the hash function is:
 

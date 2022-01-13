@@ -20,6 +20,7 @@ MathJax.Hub.Config({
 /* Stupid band-aids for everything that's broken */
 figure { margin: 0; }
 .highlight .c1 { white-space: normal; }
+.sp-gr { color: #0a0; }
 </style>
 
 
@@ -422,36 +423,36 @@ printf("%08x\n", k); // deadbeef !
 
 Printing the value of `ktmp` after each iteration shows how it is extracting bits in groups of 9:
 
-```
+<pre class="highlight">
 00000000  00000000000000000000000000000000
-832fe0ef  10000011001011111110000011101111
-e2f1beef  11100010111100011011111011101111
-66adbeef  01100110101011011011111011101111
-deadbeef  11011110101011011011111011101111
-```
+832fe0ef  10000011001011111110000<span class="sp-gr">011101111</span>
+e2f1beef  11100010111100<span class="sp-gr">011011111011101111</span>
+66adbeef  01100<span class="sp-gr">110101011011011111011101111</span>
+deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
+</pre>
 
 The bits higher than the ones extracted so far are essentially garbage from the previous iteration being incorrect, and can be ignored. These bits could be masked out at each iteration, but it’s equally correct to just ignore them.
 
 Another interesting thing about this solution is the initialization to 0 is not necessary. What is happening here is 0 correct bits are turned into 9, which are then turned into 18, and then into 27, and finally into all 32. Because of the left shift, we know that the rightmost 9 bits are 0 and so each iteration "corrects" 9 bits of ktmp which is a "guess" as to the input. Picking any other
 value for the initialization changes only the garbage data:
 
-```
+<pre class="highlight">
 abcdef97  10101011110011011110111110010111
-1f0f0eef  00011111000011110000111011101111
-a14dbeef  10100001010011011011111011101111
-1eadbeef  00011110101011011011111011101111
-deadbeef  11011110101011011011111011101111
-```
+1f0f0eef  00011111000011110000111<span class="sp-gr">011101111</span>
+a14dbeef  10100001010011<span class="sp-gr">011011111011101111</span>
+1eadbeef  00011<span class="sp-gr">110101011011011111011101111</span>
+deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
+</pre>
 
 Should some of the bits of the "guess" in ktmp already be correct, even fewer iterations are needed:
 
-```
-0000beef  00000000000000001011111011101111
-84adbeef  10000100101011011011111011101111
-deadbeef  11011110101011011011111011101111
-deadbeef  11011110101011011011111011101111
-deadbeef  11011110101011011011111011101111
-```
+<pre class="highlight">
+0000beef  0000000000000000<span class="sp-gr">1011111011101111</span>
+84adbeef  1000010<span class="sp-gr">0101011011011111011101111</span>
+deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
+deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
+deadbeef  <span class="sp-gr">11011110101011011011111011101111</span>
+</pre>
 
 Despite how interesting this solution is, like before with multiplicative inverses, it's simpler to just solve this mathematically. Note that:
 

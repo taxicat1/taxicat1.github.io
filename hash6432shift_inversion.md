@@ -312,7 +312,7 @@ k *= 1227133513; // Inverse of 2^32 - 7 modulo 2^32
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
-At this point I have to say thanks to [this extended Euclidean algorithm calculator](https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
+At this point I have to say thanks to [this extended Euclidean algorithm calculator](https://planetcalc.com/3298/) which happily deals with numbers exceeding $2^64$ and I used for every multiplicative inverse here.
 
 Note that to have a multiplicative inverse modulo $2^N$, the multiplier number must be coprime with $2^N$— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of $2^a$. Multiplying by an even number would be written as such with shifts:
 

@@ -14,8 +14,8 @@ MathJax.Hub.Config({
    }
   });
 </script>
-
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
 <style>
 /* Stupid band-aids for everything that's broken */
 figure { margin: 0; }
@@ -26,9 +26,7 @@ figure { margin: 0; }
 
 
 # Reversing an integer hash function
-
-This is an integer hash function written by Thomas Wang
-(https://gist.github.com/badboy/6267743):
+This is an integer hash function [written by Thomas Wang](https://gist.github.com/badboy/6267743):
 
 {% highlight c %}
 uint32_t hash6432shift(uint64_t key) {
@@ -42,7 +40,7 @@ uint32_t hash6432shift(uint64_t key) {
 }
 {% endhighlight %}
 
-It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function `C` along with input data or state `i` and compute `C(i) + i`. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed input— contradictions like this are the essence of fan-out.
+It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function $C()$ along with input data or state $i$ and compute $C(i) + i$. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed input— contradictions like this are the essence of fan-out.
 
 However in this case it is possible to work each step backwards, starting with taking a wild guess at which the 32 truncated bits may be at the end.The remaining steps, which add or xor a shift of the original data, are fully invertible. Therefore, every possible guess at the truncated bits can be traced back to a valid preimage.
 
@@ -85,7 +83,7 @@ $$
 k_2 = k_1 \oplus (k_1 \gg a)
 $$
 
-In order to invert this, we must remove the `k_1 >> a` term by xor-ing it again. So, since k_2 contains a k_1 term:
+In order to invert this, we must remove the $k_1 \gg a$ term by xor-ing it again. So, since $k_2$ contains a $k_1$ term:
 
 $$
 k_3 = k_2 \oplus (k_2 \gg a)
@@ -110,7 +108,7 @@ Or visually with some 8-bit strings:
       111000(11)
 ```
 
-Now we have xor-ed another copy of `k_1 >> a` against the xor-sum. This can be seen by substituting k_2 for its value as defined in terms of k_1:
+Now we have xor-ed another copy of $k_1 \gg a$ against the xor-sum. This can be seen by substituting $k_2$ for its value as defined in terms of $k_1$:
 
 $$
 \begin{align*}
@@ -154,7 +152,7 @@ key ^= key >> 22;
 Although the function only uses xor with right shifts, this same method works just the same for left shifts. Consider reversing the order of the bits of a string, then xor-ing a right shift, and then restoring the original order. Since xor has no borrow or carry out, it is agnostic to shift direction.
 
 ## Inverting addition of shifts
-The xor method does not extend to addition (or subtraction) of a right shift. Something like `k + (k >> 7)` is not invertible, because it's not even bijective.
+The xor method does not extend to addition (or subtraction) of a right shift. Something like `k += (k >> 7)` is not invertible, because it's not even bijective.
 
 This makes sense, because in this context a right shift is equivalent to taking the floor of a division by a power of 2, which of course does not distribute over addition:
 
@@ -195,7 +193,7 @@ We now get two different answers. Which is the correct one? When you compute `k 
 
 They're both correct. This is not always the case, but this function is no longer one-to-one and so this operation is not (or at least shouldn't be) commonly included in algorithms as it will pigeonhole the value passing through it. In this specific operation, 15 outputs can be produced by two different inputs, and correspondingly 15 other outputs cannot be produced no matter what the input.
 
-However, *left* shifts do distribute, being equivalent to multiplication of 2^a for shift amount a, modulo 2^N. As seen in this next line from the initial hashing function:
+However, *left* shifts do distribute, being equivalent to multiplication of $2^a$ for shift amount a, modulo $2^N$. As seen in this next line from the initial hashing function:
 
 {% highlight c %}
 key += key << 6;
@@ -207,13 +205,13 @@ $$
 k_2 = k_1 + (k_1 \ll 6)
 $$
 
-We now must subtract the `k_1 << 6` term to remove it from the sum, so:
+We now must subtract the $k_1 &ll 6$ term to remove it from the sum, so:
 
 $$
 k_3 = k_2 - (k_2 \ll 6)
 $$
 
-And substituting the value for k_2:
+And substituting the value for $k_2$:
 
 $$
 \begin{align*}
@@ -273,7 +271,7 @@ k += k << 24;
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
-However, since a left shift is multiplication modulo 2^N, we can instead invert this by multiplying by the multiplicative inverse, modulo 2^N:
+However, since a left shift is multiplication modulo $2^N$, we can instead invert this by multiplying by the multiplicative inverse, modulo $2^N$:
 
 {% highlight c %}
 uint32_t k = 0xdeadbeef;
@@ -301,7 +299,7 @@ k *= 1227133513; // Inverse of 2^32 - 7 modulo 2^32
 printf("%08x\n", k); // deadbeef !
 {% endhighlight %}
 
-At this point I have to say thanks to this extended Euclidean algorithm calculator (https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
+At this point I have to say thanks to [this extended Euclidean algorithm calculator](https://planetcalc.com/3298/) which happily deals with numbers exceeding 2^64 and I used for every multiplicative inverse here.
 
 Note that to have a multiplicative inverse modulo 2^N, the multiplier number must be coprime with 2^N— that is, odd. For `k += k << a` and `k -= k << a` this is always the case, as the initial `k` is adding or subtracting 1 to the multiplier of 2^a. Multiplying by an even number would be written as such with shifts:
 
@@ -514,8 +512,10 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
 }
 {% endhighlight %}
 
+This code can churn through every single possible preimage for a given hash in about ~19 minutes. If you want to play with the C code, [here is a download to the file](inv_hash6432_shift.c).
+
 ## Improvements to the function
-The original hash function could be improved drastically by applying the C(i) + i structure mentioned at the start, like so:
+The original hash function could be improved drastically by applying the $C(i) + i$ structure mentioned at the start, like so:
 
 {% highlight c %}
 uint32_t hash6432shift(uint64_t key) {
@@ -535,4 +535,9 @@ uint32_t hash6432shift(uint64_t key) {
 }
 {% endhighlight %}
 
-Just doing this modification I can no longer see an easy way (faster than 2^32 work) to generate preimages and so this is "left as an exercise to the reader".
+Just doing this modification I can no longer see an easy way (faster than $2^32$ work) to generate preimages and so this is "left as an exercise to the reader".
+
+## Good Wikipedia further reading
+[Hash functions](https://en.wikipedia.org/wiki/Hash_function)
+[Avalanche effect and bit independence](https://en.wikipedia.org/wiki/Avalanche_effect)
+[Fan-out](https://en.wikipedia.org/wiki/Fan-out)

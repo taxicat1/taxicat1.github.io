@@ -120,7 +120,7 @@ uint32_t k = 0xdeadbeef;
 k ^= k >> 3;
 
 /* Backwards */
-k ^= k >> 3; // Starting at 3 and doubling each time
+k ^= k >> 3; // Starting at 3 and doubling each time 
 k ^= k >> 6;
 k ^= k >> 12;
 k ^= k >> 24;

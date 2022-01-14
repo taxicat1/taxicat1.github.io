@@ -67,7 +67,7 @@ $$
 
 If an attacker wanted to manipulate the output value $H(i)$, they may start by tweaking $i$ to output a specific value in $A(i)$. However in doing so $B(i)$ and $C(i)$ now also produce different values. It is very difficult to control the outputs of all three of these functions at once (unless perhaps they are not so independent). The input value has "fanned out" into several functions, which come together at the end.
 
-A common pattern is to use some invertible covolution $C$ and compute $C(i) + i$. This way, reversing the algorithm requires first taking a guess at what $i$ may have been, then calculating $C^{-1}(h - i)$ for the given output $h$. This value then must match the guessed $i$, but it all liklihood it will not. Algorithms like MD5, SHA1 and SHA2, and Salsa20/ChaCha20 use this pattern.
+A common pattern is to use some invertible convolution $C$ and compute $C(i) + i$. This way, reversing the algorithm requires first taking a guess at what $i$ may have been, then calculating $C^{-1}(h - i)$ for the given output $h$. This value then must match the guessed $i$, but it all liklihood it will not. Algorithms like MD5, SHA1 and SHA2, and Salsa20/ChaCha20 use this pattern.
 
 In this algorithm, the input value is only used once; it therefore can be traced backwards from the output without any issues. The only thing needed is to take a guess at what the 32 bits truncated at the last step may have been. Conveniently, each of the steps taken to mix the input are fully invertible, and so *every single output hash* coupled with *all possible truncated bits* can each be traced back to a *single* valid preimage.
 

@@ -620,5 +620,4 @@ Just doing this modification I can no longer see an easy way (faster than $2^{32
 ## Good Wikipedia further reading
 - [Hash functions](https://en.wikipedia.org/wiki/Hash_function)
 - [Avalanche effect and bit independence](https://en.wikipedia.org/wiki/Avalanche_effect)
-- [Fan-out](https://en.wikipedia.org/wiki/Fan-out)
 - [Xorshift generators](https://en.wikipedia.org/wiki/Xorshift)

@@ -5,13 +5,13 @@
 
 // https://gist.github.com/badboy/6267743
 uint32_t hash6432shift(uint64_t key) {
-    key = (~key) + (key << 18);
-    key ^= key >> 31;
-    key *= 21;
-    key ^= key >> 11;
-    key += key << 6;
-    key ^= key >> 22;
-    return 0xFFFFFFFF & key;
+	key = (~key) + (key << 18);
+	key ^= key >> 31;
+	key *= 21;
+	key ^= key >> 11;
+	key += key << 6;
+	key ^= key >> 22;
+	return 0xFFFFFFFF & key;
 }
 
 
@@ -64,26 +64,26 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
 
 #define RANDU64() (((uint64_t)(rand() & 0x7FFF) << 49) | \
                    ((uint64_t)(rand() & 0x7FFF) << 34) | \
-				   ((uint64_t)(rand() & 0x7FFF) << 19) | \
-				   ((uint64_t)(rand() & 0x7FFF) <<  4) | \
-				   ((uint64_t)(rand() & 0x7FFF) >> 11))
+                   ((uint64_t)(rand() & 0x7FFF) << 19) | \
+                   ((uint64_t)(rand() & 0x7FFF) <<  4) | \
+                   ((uint64_t)(rand() & 0x7FFF) >> 11))
 
 int main(void) {
-    srand(time(0));
-    
+	srand(time(0));
+	
 	/* Good practice to do it like this, it ensures that the target hash
-	   is one that we know can be outputted by the hash function */
-    uint64_t randinput = RANDU64();
-    uint32_t targethash = hash6432shift(randinput);
-    
-    printf("Target:\n");
-    printf("%016llx -> %08x\n\n", randinput, targethash);
-    
-    printf("Preimages:\n");
+	is one that we know can be outputted by the hash function */
+	uint64_t randinput = RANDU64();
+	uint32_t targethash = hash6432shift(randinput);
+	
+	printf("Target:\n");
+	printf("%016llx -> %08x\n\n", randinput, targethash);
+	
+	printf("Preimages:\n");
 	
 	uint32_t trunc = 0;
-    do {
-        uint64_t preimage = inv_hash6432shift(targethash, trunc);
+	do {
+		uint64_t preimage = inv_hash6432shift(targethash, trunc);
 		uint32_t hash = hash6432shift(preimage);
 		
 		/* For debugging purposes */
@@ -93,7 +93,7 @@ int main(void) {
 		}
 		
 		printf("%016llx -> %08x\n", preimage, hash);
-    } while (++i != 0);
+	} while (++i != 0);
 	
 	return 0;
 }

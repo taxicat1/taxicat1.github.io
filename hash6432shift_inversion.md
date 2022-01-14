@@ -59,7 +59,7 @@ uint32_t hash6432shift(uint64_t key) {
 
 It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out.
 
-Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate an input that produces a specific hash (this is called a preimage). To visualize fan-out, imagine a hash function $H$ that uses three smaller independent functions $A$, $B$, and $C$ to produce a hash like so:
+Fan-out is necessary for a hash algorithm, otherwise you could simply trace backwards and generate an input that produces a specific hash (this is called a preimage). To visualize fan-out, imagine a hash function $H$ that uses three smaller independent functions $A$, $B$, and $C$ to produce a hash like so:
 
 $$
 H(i) = A(i) + B(i) + C(i)

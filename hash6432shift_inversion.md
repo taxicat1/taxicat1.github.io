@@ -37,10 +37,6 @@ figure {
 .markdown-body code {
 	display: inline-block;
 }
-
-.mjx-chtml {
-	display: inline;
-}
 </style>
 
 

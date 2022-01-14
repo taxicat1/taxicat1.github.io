@@ -61,9 +61,21 @@ uint32_t hash6432shift(uint64_t key) {
 }
 {% endhighlight %}
 
-It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out. Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate *an* input that produces a specific hash, this is called a preimage of the hash. Most hash functions accomplish this using some compression function $C()$ along with input data or state $i$ and compute $C(i) + i$. This pattern now means that attempting to trace the process backwards requires first taking a guess at what the input may have been, and then tracing backwards, which often results in a contradiction when the reversed value is different from the initially guessed input— contradictions like this are the essence of fan-out.
+It hashes down a 64-bit input to a 32-bit output. It has good mixing: basic statistical analysis can show that it has reasonably good avalanche effect if lacking in bit independence (certain pairs of bits of the output like to flip at the same time when the input changes in a specific way, in some cases more than 99% of the time). However this hash function has a more glaring flaw which is the lack of fan-out.
 
-However in this case it is possible to work each step backwards, starting with taking a wild guess at which the 32 truncated bits may be at the end. The remaining steps, which add or xor a shift of the original data, are fully invertible. Therefore, every possible guess at the truncated bits can be traced back to a valid preimage.
+Fan-out is necessary for a hash function, otherwise you could simply trace backwards and generate an input that produces a specific hash (this is called a preimage). To visualize fan-out, imagine a hash function $H$ that uses three smaller independent functions $A$, $B$, and $C$ to produce a hash like so:
+
+$$
+H(i) = A(i) + B(i) + C(i)
+$$
+
+If an attacker wanted to manipulate the output value $H(i)$, they may start by tweaking $i$ to output a specific value in $A(i)$. However in doing so $B(i)$ and $C(i)$ now also produce different values. It is very difficult to control the outputs of all three of these functions at once (unless perhaps they are not so independent). The input value has "fanned out" into several functions, which come together at the end.
+
+A common pattern is to use some invertible covolution $C$ and compute $C(i) + i$. This way, reversing the algorithm requires first taking a guess at what $i$ may have been, then calculating $C^{-1}(h - i)$ for the given output $h$. This value then must match the guessed $i$, but it all liklihood it will not. Algorithms like MD5, SHA1 and SHA2, and Salsa20/ChaCha20 use this pattern.
+
+In this algorithm, the input value is only used once; it therefore can be traced backwards from the output without any issues. The only thing needed is to take a guess at what the 32 bits truncated at the last step may have been. Conveniently, each of the steps taken to mix the input are fully invertible, and so *every single output hash* coupled with *all possible truncated bits* can each be traced back to a *single* valid preimage.
+
+In this article we will step through the process of writing an inversion of this hash function capable of generating preimages extremely quickly.
 
 ## Inverting xor-s of shifts
 So let’s look at the next line before the truncation:

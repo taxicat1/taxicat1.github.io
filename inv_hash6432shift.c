@@ -62,6 +62,7 @@ uint64_t inv_hash6432shift(uint32_t hash, uint32_t trunc) {
 }
 
 
+/* rand() typically outputs 15 random bits, varies depending upon implementation */
 #define RANDU64() (((uint64_t)(rand() & 0x7FFF) << 49) | \
                    ((uint64_t)(rand() & 0x7FFF) << 34) | \
                    ((uint64_t)(rand() & 0x7FFF) << 19) | \
@@ -72,7 +73,7 @@ int main(void) {
 	srand(time(0));
 	
 	/* Good practice to do it like this, it ensures that the target hash
-	is one that we know can be outputted by the hash function */
+	   is one that we know can be outputted by the hash function */
 	uint64_t randinput = RANDU64();
 	uint32_t targethash = hash6432shift(randinput);
 	
